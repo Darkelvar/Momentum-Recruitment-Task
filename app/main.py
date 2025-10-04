@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from app.api.v1 import books
 
+from app.api.v1 import books
 
 app = FastAPI(
     title="Momentum Recruitment Task Library API",

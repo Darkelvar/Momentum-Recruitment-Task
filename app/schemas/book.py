@@ -1,8 +1,8 @@
-from pydantic import BaseModel, field_validator, model_validator, StringConstraints
-from typing import Annotated
-from typing_extensions import Self
 from datetime import datetime, timezone
+from typing import Annotated
 
+from pydantic import BaseModel, StringConstraints, field_validator, model_validator
+from typing_extensions import Self
 
 SixDigitId = Annotated[
     str, StringConstraints(min_length=6, max_length=6, pattern=r"^\d{6}$")
