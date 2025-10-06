@@ -1,15 +1,11 @@
 from datetime import datetime, timezone
 from typing import Annotated
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, StringConstraints, field_validator, model_validator
 from typing_extensions import Self
 
 SixDigitId = Annotated[
-    int,
-    Field(
-        ge=100000,
-        le=999999,
-    ),
+    str, StringConstraints(min_length=6, max_length=6, pattern=r"^\d{6}$")
 ]
 
 
@@ -62,7 +58,7 @@ class BookUpdate(BaseModel):
 class BookOut(BookBase):
     is_borrowed: bool
     borrowed_at: datetime | None
-    borrowed_by: int | None
+    borrowed_by: str | None
 
 
 class Config:

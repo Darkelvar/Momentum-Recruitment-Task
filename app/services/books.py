@@ -20,12 +20,12 @@ async def get_books(db: AsyncSession) -> List[Book]:
     return result.scalars().all()
 
 
-async def get_book(db: AsyncSession, serial_number: int) -> Book | None:
+async def get_book(db: AsyncSession, serial_number: str) -> Book | None:
     return await db.get(Book, serial_number)
 
 
 async def update_book(
-    db: AsyncSession, serial_number: int, book_in: BookUpdate
+    db: AsyncSession, serial_number: str, book_in: BookUpdate
 ) -> Book | None:
     book = await db.get(Book, serial_number)
     if not book:
@@ -43,7 +43,7 @@ async def update_book(
     return book
 
 
-async def delete_book(db: AsyncSession, serial_number: int) -> bool:
+async def delete_book(db: AsyncSession, serial_number: str) -> bool:
     book = await db.get(Book, serial_number)
     if not book:
         return False
