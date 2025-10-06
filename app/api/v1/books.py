@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,7 +27,14 @@ async def list_books(db: AsyncSession = Depends(get_session)):
 
 
 @router.get("/{serial_number}", response_model=BookOut, status_code=200)
-async def get_book(serial_number: str, db: AsyncSession = Depends(get_session)):
+async def get_book(
+    serial_number: str = Path(
+        min_length=6,
+        max_length=6,
+        pattern=r"^\d{6}$",
+    ),
+    db: AsyncSession = Depends(get_session),
+):
     book = await books.get_book(db, serial_number)
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -36,7 +43,13 @@ async def get_book(serial_number: str, db: AsyncSession = Depends(get_session)):
 
 @router.put("/{serial_number}", response_model=BookOut, status_code=200)
 async def update_book(
-    serial_number: str, book_in: BookUpdate, db: AsyncSession = Depends(get_session)
+    book_in: BookUpdate,
+    serial_number: str = Path(
+        min_length=6,
+        max_length=6,
+        pattern=r"^\d{6}$",
+    ),
+    db: AsyncSession = Depends(get_session),
 ):
     book = await books.update_book(db, serial_number, book_in)
     if not book:
@@ -45,7 +58,14 @@ async def update_book(
 
 
 @router.delete("/{serial_number}", status_code=204)
-async def delete_book(serial_number: str, db: AsyncSession = Depends(get_session)):
+async def delete_book(
+    serial_number: str = Path(
+        min_length=6,
+        max_length=6,
+        pattern=r"^\d{6}$",
+    ),
+    db: AsyncSession = Depends(get_session),
+):
     success = await books.delete_book(db, serial_number)
     if not success:
         raise HTTPException(status_code=404, detail="Book not found")

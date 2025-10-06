@@ -12,6 +12,17 @@ services:
     ports:
       - "5432:5432"
 
+  test-db:
+    image: postgres:18-alpine
+    container_name: library_test_db
+    environment:
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: library_pass
+      POSTGRES_DB: library_test_db
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
   app:
     build: .
     container_name: library_app
@@ -28,5 +39,20 @@ services:
     depends_on:
       - db
 
+  test:
+    build: .
+    container_name: library_tests
+    command: >
+      sh -c "
+      dockerize -wait tcp://test-db:5432 -timeout 60s &&
+      alembic -x db_url='postgresql+psycopg2://library_user:library_pass@test-db:5432/library_test_db' upgrade head &&
+      pytest
+      "
+    volumes:
+      - .:/code
+    depends_on:
+      - test-db
+
 volumes:
   postgres_data:
+  test_postgres_data:
